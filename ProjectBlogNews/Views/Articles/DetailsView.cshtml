@@ -1,0 +1,13 @@
+﻿@model ProjectBlogNews.Models.Article
+@{
+    ViewData["Title"] = "Article Details";
+}
+
+<h1>@Html.DisplayFor(model => model.Title)</h1>
+<p>Release date <b>@Html.DisplayFor(model => model.ReleaseDate)</b></p>
+<h4>@Html.DisplayFor(model => model.FreeContent)</h4>
+<p>@Html.DisplayFor(model => model.PremiumContent)</p>
+<p>Created by: <b>@Html.DisplayFor(model => model.Author.FirstName) @Html.DisplayFor(model => model.Author.LastName)</b></p>
+<!-- Add more details as needed -->
+
+<a asp-controller="Home" asp-action="Index">Go back tou our awsome news list!</a>
