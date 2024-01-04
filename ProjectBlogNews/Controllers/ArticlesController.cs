@@ -175,5 +175,24 @@ namespace ProjectBlogNews.Controllers
         {
           return (_context.Article?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+        [AllowAnonymous] // Allow access to all roles
+        public async Task<IActionResult> DetailsView(int? id)
+        {
+            if (id == null || _context.Article == null)
+            {
+                return NotFound();
+            }
+
+            var article = await _context.Article
+                .Include(a => a.Author)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (article == null)
+            {
+                return NotFound();
+            }
+
+            return View("DetailsView", article);
+        }
     }
 }
