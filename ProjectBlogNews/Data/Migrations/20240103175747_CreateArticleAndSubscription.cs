@@ -39,7 +39,9 @@ namespace ProjectBlogNews.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     SubscriptionStartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     SubscriptionEndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    
+
                 },
                 constraints: table =>
                 {

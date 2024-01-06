@@ -1,0 +1,17 @@
+@model ProjectBlogNews.Models.Subscription
+
+<h2>Potwierdzenie P³atnoœci</h2>
+
+<p>Data rozpoczêcia: @Model.SubscriptionStartDate</p>
+<p>Data zakoñczenia: @Model.SubscriptionEndDate</p>
+<p>Cena: @Model.Price PLN</p>
+
+<form asp-controller="Subscriptions" asp-action="FinalizePayment" method="post">
+    <input type="hidden" name="StartDate" value="@Model.SubscriptionStartDate" />
+    <input type="hidden" name="EndDate" value="@Model.SubscriptionEndDate" />
+    <input type="hidden" name="Price" value="@Model.Price" />
+
+    <button type="submit" class="btn btn-success">PotwierdŸ i zap³aæ</button>
+</form>
+
+<a asp-action="SelectSubscriptionDuration" class="btn btn-danger">Anuluj</a>

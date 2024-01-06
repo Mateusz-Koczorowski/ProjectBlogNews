@@ -37,6 +37,18 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">Manage users</a>
                             </li>
                         }
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Subscriptions" asp-action="UserSubscriptions">See you subscription</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Subscriptions" asp-action="SelectSubscriptionDuration">Buy subscription</a>
+                            </li>
+                        }
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>
