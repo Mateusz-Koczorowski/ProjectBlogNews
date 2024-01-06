@@ -23,7 +23,7 @@ namespace ProjectBlogNews.Models
         public bool IsActive 
         {
             get {
-                var date = new DateTime();
+                var date =  DateTime.Now;
                 if (SubscriptionStartDate != null)
                 {
                     if (SubscriptionStartDate > date)

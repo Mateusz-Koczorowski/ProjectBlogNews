@@ -1,0 +1,25 @@
+﻿@model List<ProjectBlogNews.Models.Subscription>
+
+<h2>Your Subscriptions</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Subscription Start Date</th>
+            <th>Subscription End Date</th>
+            <th>Price</th>
+            <th>Is Active</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var subscription in Model)
+        {
+            <tr>
+                <td>@subscription.SubscriptionStartDate</td>
+                <td>@subscription.SubscriptionEndDate</td>
+                <td>@subscription.Price.ToString("C")</td>
+                <td>@(subscription.IsActive ? "Yes" : "No")</td>
+            </tr>
+        }
+    </tbody>
+</table>
