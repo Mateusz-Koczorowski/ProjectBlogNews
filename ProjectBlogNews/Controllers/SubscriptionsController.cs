@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ProjectBlogNews.Data;
 using ProjectBlogNews.Models;
+using System.Globalization;
+
 
 
 namespace ProjectBlogNews.Controllers
@@ -23,14 +25,14 @@ namespace ProjectBlogNews.Controllers
             _context = context;
         }
 
-        // GET: Subscriptions
+        
         public async Task<IActionResult> Index()
         {
             var applicationDbContext = _context.Subscription.Include(s => s.User);
             return View(await applicationDbContext.ToListAsync());
         }
 
-        // GET: Subscriptions/Details/5
+        
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Subscription == null)
@@ -49,16 +51,14 @@ namespace ProjectBlogNews.Controllers
             return View(subscription);
         }
 
-        // GET: Subscriptions/Create
+        
         public IActionResult Create()
         {
             ViewData["User"] = new SelectList(_context.Users, "Email", "Id");
             return View();
         }
 
-        // POST: Subscriptions/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+       
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,SubscriptionStartDate,SubscriptionEndDate,UserId,Price")] Subscription subscription)
@@ -73,7 +73,7 @@ namespace ProjectBlogNews.Controllers
             return View(subscription);
         }
 
-        // GET: Subscriptions/Edit/5
+        
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Subscription == null)
@@ -90,9 +90,7 @@ namespace ProjectBlogNews.Controllers
             return View(subscription);
         }
 
-        // POST: Subscriptions/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int? id, [Bind("Id,SubscriptionStartDate,SubscriptionEndDate,UserId,Price")] Subscription subscription)
@@ -126,7 +124,7 @@ namespace ProjectBlogNews.Controllers
             return View(subscription);
         }
 
-        // GET: Subscriptions/Delete/5
+        
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Subscription == null)
@@ -145,7 +143,7 @@ namespace ProjectBlogNews.Controllers
             return View(subscription);
         }
 
-        // POST: Subscriptions/Delete/5
+        
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int? id)
@@ -179,49 +177,124 @@ namespace ProjectBlogNews.Controllers
             return View(userSubscriptions);
         }
 
-        // Action to display subscription selection form
+        
         public IActionResult SelectSubscriptionDuration()
         {
             return View();
         }
 
-        // Action to process subscription payment
+       
         [HttpPost]
-        public IActionResult ProcessPayment(int durationInDays)
+        public IActionResult ProcessPayment(DateTime startDate, DateTime endDate)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (endDate < startDate)
+            {
+                
+                ModelState.AddModelError("", "Data zakończenia jest wcześniejsza niż data rozpoczęcia.");
+                return View("SelectSubscriptionDuration");
+            }
 
-            // Calculate price based on durationInDays
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var currentDate = DateTime.Now;
+
+            
+            var overlappingSubscription = _context.Subscription
+                .Any(s => s.UserId == userId &&
+                          s.SubscriptionStartDate <= currentDate &&
+                          s.SubscriptionEndDate >= currentDate &&
+                          ((s.SubscriptionStartDate <= startDate && s.SubscriptionEndDate >= startDate) ||
+                           (s.SubscriptionStartDate <= endDate && s.SubscriptionEndDate >= endDate)));
+
+            if (overlappingSubscription)
+            {
+                
+                ModelState.AddModelError("", "Wybrany został termin pokrywający się z inną aktywną subskrypcją.");
+                return View("SelectSubscriptionDuration");
+            }
+
+            var durationInDays = (endDate - startDate).Days;
             decimal price = CalculatePrice(durationInDays);
 
-            // Create a new subscription record
-            var subscription = new Subscription
-            {
-                SubscriptionStartDate = DateTime.Now,
-                SubscriptionEndDate = DateTime.Now.AddDays(durationInDays),
-                UserId = userId,
-                Price = price
-            };
+            //test
+            Console.WriteLine($"StartDate: {startDate}, EndDate: {endDate}");
 
-            _context.Subscription.Add(subscription);
-            _context.SaveChanges();
+            TempData["StartDate"] = startDate.ToShortDateString();
+            TempData["EndDate"] = endDate.ToShortDateString();
+            TempData["DurationInDays"] = durationInDays;
+            TempData["Price"] = price.ToString("F2");
 
-            // Redirect to a confirmation page or show a success message
-            return RedirectToAction("PaymentSuccess");
+            
+            
+            return RedirectToAction("ConfirmPayment");
         }
 
-        // Action for payment success
+
+        
         public IActionResult PaymentSuccess()
         {
             return View();
         }
 
-        // Helper method to calculate subscription price
+        
         private decimal CalculatePrice(int durationInDays)
         {
-            // Add your price calculation logic here
-            // Example: $1 per day
-            return 1.0m * durationInDays;
+            
+            return 0.5m * durationInDays;
+        }
+
+        public IActionResult ConfirmPayment()
+        {
+        
+            var startDate = DateTime.Parse((string)TempData["StartDate"]);
+            var endDate = DateTime.Parse((string)TempData["EndDate"]);
+            decimal price;
+
+            try
+            {
+                price = decimal.Parse((string)TempData["Price"], CultureInfo.InvariantCulture);
+            }
+            catch (FormatException)
+            {
+                
+                return RedirectToAction("SelectSubscriptionDuration");
+            }
+
+            var model = new SubscriptionConfirmationViewModel
+            {
+                StartDate = (string)TempData["StartDate"],
+                EndDate = (string)TempData["EndDate"],
+                DurationInDays = (int)TempData["DurationInDays"],
+                Price = price
+            };
+
+            return View(model);
+        }
+        [HttpPost]
+        public IActionResult FinalizePayment()
+        {
+                       
+            var startDate = DateTime.Parse((string)TempData["StartDate"]);
+            var endDate = DateTime.Parse((string)TempData["EndDate"]);
+            var price = decimal.Parse((string)TempData["Price"], CultureInfo.InvariantCulture);
+
+            
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            
+            var subscription = new Subscription
+            {
+                SubscriptionStartDate = startDate,
+                SubscriptionEndDate = endDate,
+                UserId = userId,
+                Price = price
+            };
+
+            
+            _context.Subscription.Add(subscription);
+            _context.SaveChanges();
+
+           
+            return RedirectToAction("PaymentSuccess");
         }
 
     }

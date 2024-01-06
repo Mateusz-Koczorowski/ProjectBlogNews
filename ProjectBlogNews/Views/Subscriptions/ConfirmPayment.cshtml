@@ -1,0 +1,14 @@
+@model SubscriptionConfirmationViewModel
+
+<h2>Potwierdzenie P³atnoœci</h2>
+
+<p>Data rozpoczêcia: @Model.StartDate</p>
+<p>Data zakoñczenia: @Model.EndDate</p>
+<p>Iloœæ dni: @Model.DurationInDays</p>
+<p>Cena: @Model.Price $</p>
+
+<form asp-action="FinalizePayment" method="post">
+    <button type="submit" class="btn btn-success">PotwierdŸ i zap³aæ</button>
+</form>
+
+<a asp-action="SelectSubscriptionDuration" class="btn btn-danger">Anuluj</a>
