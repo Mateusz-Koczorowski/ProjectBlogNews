@@ -15,5 +15,24 @@ namespace ProjectBlogNews.Models
         [ForeignKey("ApplicationUser")]
         public string? AuthorId { get; set; }
         public virtual ApplicationUser? Author { get; set; }
+
+        public string GetAvailablePremiumContentForNonPremium()
+        {
+            if (string.IsNullOrWhiteSpace(PremiumContent))
+            {
+                return string.Empty;
+            }
+
+            // Split the PremiumContent into words
+            string[] words = PremiumContent.Split(new char[] { ' ', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+
+            // Calculate the number of words to include (10% of total words)
+            int wordsToInclude = (int)Math.Ceiling(words.Length * 0.25);
+
+            // Take the first 10% of words
+            string restrictedContent = string.Join(" ", words.Take(wordsToInclude));
+
+            return restrictedContent;
+        }
     }
 }

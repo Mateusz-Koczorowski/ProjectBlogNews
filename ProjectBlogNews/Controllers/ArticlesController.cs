@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using ProjectBlogNews.Data;
 using ProjectBlogNews.Models;
 
@@ -178,14 +179,35 @@ namespace ProjectBlogNews.Controllers
         [AllowAnonymous] // Allow access to all roles
         public async Task<IActionResult> DetailsView(int? id)
         {
+            var subscriptionIsActive = false;
+
+            // Check if the user is authenticated (logged in)
+            if (User.Identity.IsAuthenticated)
+            {
+                var user = await _userManager.GetUserAsync(User);
+
+                if (user != null)
+                {
+                    var userSubscriptions = await _context.Subscription
+                        .Where(x => x.UserId == user.Id)
+                        .ToListAsync();
+
+                    // Check if any subscription is active
+                    subscriptionIsActive = userSubscriptions.Any(item => item.IsActive);
+                }
+            }
+            ViewData["userHasPremium"] = subscriptionIsActive;
             if (id == null || _context.Article == null)
             {
                 return NotFound();
             }
+            
+            
 
             var article = await _context.Article
                 .Include(a => a.Author)
                 .FirstOrDefaultAsync(m => m.Id == id);
+            ViewData["AvailablePremiumContentForNonPremium"] = article.GetAvailablePremiumContentForNonPremium();
 
             if (article == null)
             {
