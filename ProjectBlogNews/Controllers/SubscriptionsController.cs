@@ -15,7 +15,7 @@ using System.Globalization;
 
 namespace ProjectBlogNews.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     public class SubscriptionsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -25,14 +25,14 @@ namespace ProjectBlogNews.Controllers
             _context = context;
         }
 
-        
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
             var applicationDbContext = _context.Subscription.Include(s => s.User);
             return View(await applicationDbContext.ToListAsync());
         }
 
-        
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Subscription == null)
@@ -51,14 +51,14 @@ namespace ProjectBlogNews.Controllers
             return View(subscription);
         }
 
-        
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             ViewData["User"] = new SelectList(_context.Users, "Email", "Id");
             return View();
         }
 
-       
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,SubscriptionStartDate,SubscriptionEndDate,UserId,Price")] Subscription subscription)
@@ -73,7 +73,7 @@ namespace ProjectBlogNews.Controllers
             return View(subscription);
         }
 
-        
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Subscription == null)
@@ -90,7 +90,7 @@ namespace ProjectBlogNews.Controllers
             return View(subscription);
         }
 
-        
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int? id, [Bind("Id,SubscriptionStartDate,SubscriptionEndDate,UserId,Price")] Subscription subscription)
@@ -124,7 +124,7 @@ namespace ProjectBlogNews.Controllers
             return View(subscription);
         }
 
-        
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Subscription == null)
@@ -143,7 +143,7 @@ namespace ProjectBlogNews.Controllers
             return View(subscription);
         }
 
-        
+        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int? id)
@@ -161,7 +161,7 @@ namespace ProjectBlogNews.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-
+        
         private bool SubscriptionExists(int? id)
         {
           return (_context.Subscription?.Any(e => e.Id == id)).GetValueOrDefault();
