@@ -1,4 +1,5 @@
 ﻿@model ProjectBlogNews.Data.ApplicationUser
+@inject Microsoft.AspNetCore.Identity.UserManager<ProjectBlogNews.Data.ApplicationUser> _userManager
 
 <h2>Edit User</h2>
 
@@ -29,6 +30,17 @@
         <label asp-for="BirthDate" class="control-label"></label>
         <input asp-for="BirthDate" type="date" class="form-control" />
         <span asp-validation-for="BirthDate" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="Roles" class="control-label">Roles</label>
+        <select class="form-control" id="Roles" name="Roles">
+            @foreach (var role in ViewBag.AllRoles)
+            {
+                <option value="@role" selected="@ViewBag.UserRoles.Contains(role)">@role</option>
+            }
+        </select>
+        
     </div>
 
     <div class="form-group">

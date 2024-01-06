@@ -9,7 +9,7 @@ using ProjectBlogNews.Models;
 
 namespace ProjectBlogNews.Controllers
 {
-    [Authorize(Roles = "Admin")] // Restrict access to users with the "Admin" role
+    [Authorize(Roles = "Admin")]
     public class UsersController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -23,14 +23,12 @@ namespace ProjectBlogNews.Controllers
             _signInManager = signInManager;
         }
 
-        // GET: Users
         public async Task<IActionResult> Index()
         {
             var users = await _context.Users.ToListAsync();
             return View(users);
         }
 
-        // GET: Users/Details/5
         public async Task<IActionResult> Details(string id)
         {
             if (id == null)
@@ -46,15 +44,13 @@ namespace ProjectBlogNews.Controllers
                 return NotFound();
             }
 
-            // Retrieve roles for the user
             var roles = await _userManager.GetRolesAsync(user);
 
-            ViewBag.Roles = roles; // Pass roles to the view
+            ViewBag.Roles = roles;
 
             return View(user);
         }
 
-        // GET: Users/Edit/5
         public async Task<IActionResult> Edit(string id)
         {
             if (id == null)
@@ -68,13 +64,18 @@ namespace ProjectBlogNews.Controllers
                 return NotFound();
             }
 
+            var userRoles = await _userManager.GetRolesAsync(user);
+            var allRoles = await _context.Roles.Select(r => r.Name).ToListAsync();
+
+            ViewBag.AllRoles = allRoles;
+            ViewBag.UserRoles = userRoles;
+
             return View(user);
         }
 
-        // POST: Users/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Id,FirstName,LastName,Email,BirthDate")] ApplicationUser user)
+        public async Task<IActionResult> Edit(string id, [Bind("Id,FirstName,LastName,Email,BirthDate")] ApplicationUser user, string[] Roles)
         {
             if (id != user.Id)
             {
@@ -95,6 +96,10 @@ namespace ProjectBlogNews.Controllers
                         existingUser.BirthDate = user.BirthDate;
 
                         await _userManager.UpdateAsync(existingUser);
+
+                        var userRoles = await _userManager.GetRolesAsync(existingUser);
+                        await _userManager.RemoveFromRolesAsync(existingUser, userRoles.ToArray());
+                        await _userManager.AddToRolesAsync(existingUser, Roles);
                     }
                 }
                 catch (DbUpdateConcurrencyException)
@@ -111,10 +116,13 @@ namespace ProjectBlogNews.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+            var allRoles = await _userManager.GetRolesAsync(new ApplicationUser());
+            ViewBag.AllRoles = allRoles;
+            ViewBag.UserRoles = Roles;
+
             return View(user);
         }
 
-        // GET: Users/Delete/5
         public async Task<IActionResult> Delete(string id)
         {
             if (id == null)
@@ -132,7 +140,6 @@ namespace ProjectBlogNews.Controllers
             return View(user);
         }
 
-        // POST: Users/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)

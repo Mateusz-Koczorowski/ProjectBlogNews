@@ -1,5 +1,5 @@
 ﻿@model ProjectBlogNews.Data.ApplicationUser
-@inject UserManager<ApplicationUser> UserManager
+@inject Microsoft.AspNetCore.Identity.UserManager<ProjectBlogNews.Data.ApplicationUser> _userManager
 
 <h2>User Details</h2>
 
@@ -18,7 +18,7 @@
 
     <dt class="col-sm-2">Roles:</dt>
     <dd class="col-sm-10">
-        @foreach (var role in await UserManager.GetRolesAsync(Model))
+        @foreach (var role in await _userManager.GetRolesAsync(Model))
         {
             <span>@role</span>
         }
