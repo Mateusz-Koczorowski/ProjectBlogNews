@@ -1,0 +1,9 @@
+﻿<h2>Select Subscription Duration</h2>
+
+<form asp-action="ProcessPayment" method="post">
+    <div class="form-group">
+        <label for="durationInDays">Duration (in days):</label>
+        <input type="number" class="form-control" id="durationInDays" name="durationInDays" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Pay</button>
+</form>

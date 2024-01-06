@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ProjectBlogNews.Data;
 using ProjectBlogNews.Models;
+
 
 namespace ProjectBlogNews.Controllers
 {
@@ -50,7 +52,7 @@ namespace ProjectBlogNews.Controllers
         // GET: Subscriptions/Create
         public IActionResult Create()
         {
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
+            ViewData["User"] = new SelectList(_context.Users, "Email", "Id");
             return View();
         }
 
@@ -67,7 +69,7 @@ namespace ProjectBlogNews.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", subscription.UserId);
+            ViewData["User"] = new SelectList(_context.Users, "Id", "Id", subscription.User.Email);
             return View(subscription);
         }
 
@@ -84,7 +86,7 @@ namespace ProjectBlogNews.Controllers
             {
                 return NotFound();
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", subscription.UserId);
+            ViewData["User"] = new SelectList(_context.Users, "Id", "Id", subscription.User.Email);
             return View(subscription);
         }
 
@@ -120,7 +122,7 @@ namespace ProjectBlogNews.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", subscription.UserId);
+            ViewData["User"] = new SelectList(_context.Users, "Id", "Id", subscription.User.Email);
             return View(subscription);
         }
 
@@ -166,5 +168,61 @@ namespace ProjectBlogNews.Controllers
         {
           return (_context.Subscription?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+        public IActionResult UserSubscriptions()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userSubscriptions = _context.Subscription
+                .Where(s => s.UserId == userId)
+                .ToList();
+
+            return View(userSubscriptions);
+        }
+
+        // Action to display subscription selection form
+        public IActionResult SelectSubscriptionDuration()
+        {
+            return View();
+        }
+
+        // Action to process subscription payment
+        [HttpPost]
+        public IActionResult ProcessPayment(int durationInDays)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // Calculate price based on durationInDays
+            decimal price = CalculatePrice(durationInDays);
+
+            // Create a new subscription record
+            var subscription = new Subscription
+            {
+                SubscriptionStartDate = DateTime.Now,
+                SubscriptionEndDate = DateTime.Now.AddDays(durationInDays),
+                UserId = userId,
+                Price = price
+            };
+
+            _context.Subscription.Add(subscription);
+            _context.SaveChanges();
+
+            // Redirect to a confirmation page or show a success message
+            return RedirectToAction("PaymentSuccess");
+        }
+
+        // Action for payment success
+        public IActionResult PaymentSuccess()
+        {
+            return View();
+        }
+
+        // Helper method to calculate subscription price
+        private decimal CalculatePrice(int durationInDays)
+        {
+            // Add your price calculation logic here
+            // Example: $1 per day
+            return 1.0m * durationInDays;
+        }
+
     }
 }
