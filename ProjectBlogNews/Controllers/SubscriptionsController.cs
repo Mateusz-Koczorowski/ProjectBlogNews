@@ -213,19 +213,15 @@ namespace ProjectBlogNews.Controllers
             }
 
             var durationInDays = (endDate - startDate).Days;
-            decimal price = CalculatePrice(durationInDays);
+            double price = CalculatePrice(durationInDays);
 
-            //test
-            Console.WriteLine($"StartDate: {startDate}, EndDate: {endDate}");
-
-            TempData["StartDate"] = startDate.ToShortDateString();
-            TempData["EndDate"] = endDate.ToShortDateString();
+            TempData["StartDate"] = startDate;
+            TempData["EndDate"] = endDate;
             TempData["DurationInDays"] = durationInDays;
-            TempData["Price"] = price.ToString("F2");
+            TempData["Price"] = price.ToString();
+            
 
-            
-            
-            return RedirectToAction("ConfirmPayment");
+            return RedirectToAction("ConfirmPayment", TempData);
         }
 
 
@@ -236,51 +232,31 @@ namespace ProjectBlogNews.Controllers
         }
 
         
-        private decimal CalculatePrice(int durationInDays)
+        private double CalculatePrice(int durationInDays)
         {
             
-            return 0.5m * durationInDays;
+            return 0.5 * durationInDays;
         }
 
         public IActionResult ConfirmPayment()
         {
-        
-            var startDate = DateTime.Parse((string)TempData["StartDate"]);
-            var endDate = DateTime.Parse((string)TempData["EndDate"]);
-            decimal price;
+            double.TryParse(TempData["Price"].ToString(), out var price);
 
-            try
+            var model = new Subscription
             {
-                price = decimal.Parse((string)TempData["Price"], CultureInfo.InvariantCulture);
-            }
-            catch (FormatException)
-            {
-                
-                return RedirectToAction("SelectSubscriptionDuration");
-            }
-
-            var model = new SubscriptionConfirmationViewModel
-            {
-                StartDate = (string)TempData["StartDate"],
-                EndDate = (string)TempData["EndDate"],
-                DurationInDays = (int)TempData["DurationInDays"],
-                Price = price
+                SubscriptionStartDate = (DateTime)TempData["StartDate"],
+                SubscriptionEndDate = (DateTime)TempData["EndDate"],
+                Price = (decimal)price,
             };
 
             return View(model);
         }
-        [HttpPost]
-        public IActionResult FinalizePayment()
-        {
-                       
-            var startDate = DateTime.Parse((string)TempData["StartDate"]);
-            var endDate = DateTime.Parse((string)TempData["EndDate"]);
-            var price = decimal.Parse((string)TempData["Price"], CultureInfo.InvariantCulture);
 
-            
+        [HttpPost]
+        public IActionResult FinalizePayment(DateTime startDate, DateTime endDate, decimal price)
+        {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            
             var subscription = new Subscription
             {
                 SubscriptionStartDate = startDate,
@@ -289,11 +265,11 @@ namespace ProjectBlogNews.Controllers
                 Price = price
             };
 
-            
             _context.Subscription.Add(subscription);
             _context.SaveChanges();
+            Console.WriteLine($"Zapisało");
 
-           
+
             return RedirectToAction("PaymentSuccess");
         }
 

@@ -29,7 +29,16 @@
         <input type="date" id="endDate" name="endDate" required />
     </div>
 
+    <input type="hidden" name="StartDate" id="StartDate" />
+    <input type="hidden" name="EndDate" id="EndDate" />
+
     <button type="submit" class="btn btn-primary">Złóż Zamówienie</button>
 </form>
 
-
+<script>
+    // Add JavaScript to set the values of hidden fields when the form is submitted
+    document.querySelector('form').addEventListener('submit', function () {
+        document.getElementById('StartDate').value = document.getElementById('startDate').value;
+        document.getElementById('EndDate').value = document.getElementById('endDate').value;
+    });
+</script>
