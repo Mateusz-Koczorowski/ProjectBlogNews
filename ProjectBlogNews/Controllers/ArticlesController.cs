@@ -194,5 +194,16 @@ namespace ProjectBlogNews.Controllers
 
             return View("DetailsView", article);
         }
+        private async Task<bool> CheckPremiumSubscriptionStatus(string userId)
+        {
+            var currentDate = DateTime.Now;
+
+            // Check if there is an active subscription for the user
+            var activeSubscription = await _context.Subscription
+                .Where(s => s.UserId == userId && s.SubscriptionStartDate <= currentDate && s.SubscriptionEndDate >= currentDate)
+                .FirstOrDefaultAsync();
+
+            return activeSubscription != null;
+        }
     }
 }

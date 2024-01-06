@@ -78,7 +78,8 @@ public class Program {
                     Password = "Admin123admin!",
                     FirstName = "Admin",
                     LastName = "Adminsky",
-                    BirthDate = DateTime.Parse("1970-01-01")
+                    BirthDate = DateTime.Parse("1970-01-01"),
+                    Role = "Admin",
                 },
                 Author = new
                 {
@@ -86,7 +87,8 @@ public class Program {
                     Password = "Author123author!",
                     FirstName = "John",
                     LastName = "Smith",
-                    BirthDate = DateTime.Parse("1970-01-01")
+                    BirthDate = DateTime.Parse("1970-01-01"),
+                    Role = "Author",
                 },
                 Reader = new
                 {
@@ -94,7 +96,8 @@ public class Program {
                     Password = "Reader123reader!",
                     FirstName = "Lukas",
                     LastName = "Kowalsky",
-                    BirthDate = DateTime.Parse("1970-01-01")
+                    BirthDate = DateTime.Parse("1970-01-01"),
+                    Role = "Reader",
                 }
             };
 
@@ -116,7 +119,7 @@ public class Program {
                     };
 
                     await userManager.CreateAsync(user, password);
-                    await userManager.AddToRoleAsync(user, "Admin"); // You may need to adjust the role accordingly
+                    await userManager.AddToRoleAsync(user, userType.Role); // You may need to adjust the role accordingly
                 }
             }
         }
