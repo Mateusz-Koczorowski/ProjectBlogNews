@@ -3,17 +3,19 @@
     ViewData["Title"] = "News Blog";
 }
 
-
 <div class="text-center">
     <h1 class="display-4">Best NEWS Blog in THA WORLD</h1>
     @foreach (var item in Model)
     {
-        <h2>@Html.DisplayFor(modelItem => item.Title)</h2><br />
+        <h2><a asp-controller="Articles" asp-action="DetailsView" asp-route-id="@item.Id">@item.Title</a></h2>
 
-        <h5>@Html.DisplayFor(modelItem => item.ReleaseDate)</h5><br />
+        <br />
+        <h5>@Html.DisplayFor(modelItem => item.ReleaseDate)</h5>
 
-              <h4> @Html.DisplayFor(modelItem => item.Author.LastName)</h4><br/>
-              <hr />
+        <br />
+        <h4>@Html.DisplayFor(modelItem => item.Author.LastName)</h4>
 
+        <br />
+        <hr />
     }
 </div>
