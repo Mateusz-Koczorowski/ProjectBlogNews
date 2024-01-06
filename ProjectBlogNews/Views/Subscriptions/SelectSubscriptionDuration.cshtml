@@ -1,9 +1,35 @@
-﻿<h2>Select Subscription Duration</h2>
+﻿@model ProjectBlogNews.Models.Subscription
+
+@{
+    ViewData["Title"] = "Wybierz Czas Trwania Subskrypcji";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        <ul>
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(m => m.Errors))
+            {
+                <li>@error.ErrorMessage</li>
+            }
+        </ul>
+    </div>
+}
 
 <form asp-action="ProcessPayment" method="post">
     <div class="form-group">
-        <label for="durationInDays">Duration (in days):</label>
-        <input type="number" class="form-control" id="durationInDays" name="durationInDays" required>
+        <label for="startDate">Data rozpoczęcia:</label>
+        <input type="date" id="startDate" name="startDate" required />
     </div>
-    <button type="submit" class="btn btn-primary">Pay</button>
+
+    <div class="form-group">
+        <label for="endDate">Data zakończenia:</label>
+        <input type="date" id="endDate" name="endDate" required />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Złóż Zamówienie</button>
 </form>
+
+
