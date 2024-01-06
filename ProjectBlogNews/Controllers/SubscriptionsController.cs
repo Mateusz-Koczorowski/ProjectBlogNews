@@ -190,10 +190,18 @@ namespace ProjectBlogNews.Controllers
             if (endDate < startDate)
             {
                 
-                ModelState.AddModelError("", "Data zakończenia jest wcześniejsza niż data rozpoczęcia.");
-                return View("SelectSubscriptionDuration");
+                ModelState.AddModelError("","The end date is earlier than the start date.");
+                return View("","SelectSubscriptionDuration");
             }
-
+            if (endDate == startDate)
+            {
+                
+                ModelState.AddModelError("","Start date must be different from the end date.");
+            }
+            if (DateTime.Now > startDate)
+            {
+                ModelState.AddModelError("","The chosen date cannot be earlier than today.");
+            }
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var currentDate = DateTime.Now;
 
@@ -208,7 +216,7 @@ namespace ProjectBlogNews.Controllers
             if (overlappingSubscription)
             {
                 
-                ModelState.AddModelError("", "Wybrany został termin pokrywający się z inną aktywną subskrypcją.");
+                ModelState.AddModelError("","The selected period overlaps with another active subscription.");
                 return View("SelectSubscriptionDuration");
             }
 
