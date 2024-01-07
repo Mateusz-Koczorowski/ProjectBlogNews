@@ -1,3 +1,4 @@
+using DotNetEnv;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ProjectBlogNews.Data;
@@ -69,8 +70,9 @@ public class Program {
 
         using (var scope = app.Services.CreateScope())
         {
+            Env.Load();
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-
+            Console.WriteLine($"Admin_BirthDate: {Environment.GetEnvironmentVariable("Admin_Email")}");
             var userData = new
             {
                 Admin = new
@@ -98,6 +100,7 @@ public class Program {
                     BirthDate = DateTime.Parse(Environment.GetEnvironmentVariable("Reader_BirthDate"))
                 }
             };
+
 
             foreach (var userType in new[] { userData.Admin, userData.Author, userData.Reader })
             {
