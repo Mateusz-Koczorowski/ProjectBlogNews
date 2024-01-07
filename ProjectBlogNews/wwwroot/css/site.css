@@ -15,8 +15,25 @@ html {
 
 body {
     margin-bottom: 60px;
-    background-image: url('../Helpers/background.png'); /* Replace with the path to your image */
-    background-size: cover; /* Ensure the image covers the entire background */
-    background-position: center; /* Center the image */
-    background-repeat: no-repeat; /* Do not repeat the image */
+    background-image: url('../Helpers/background.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+#blur {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1; /* Move it behind other content */
+    backdrop-filter: blur(10px); /* Adjust the blur intensity as needed */
+    pointer-events: none; /* Allows click-through to elements behind it */
+}
+
+footer {
+    z-index: 100; /* Adjust this value to ensure the footer is on top */
+    position: relative; /* Ensure the footer is positioned relative to its normal position */
 }

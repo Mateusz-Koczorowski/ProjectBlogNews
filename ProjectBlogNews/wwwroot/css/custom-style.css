@@ -2,3 +2,6 @@
     font-size: 16px;
     margin-left: 10px; /* Adjust the margin as needed */
 }
+.container {
+    background: rgba(220, 220, 220, 0.9) !important;
+}
