@@ -15,6 +15,12 @@ namespace ProjectBlogNews.Models
         [ForeignKey("ApplicationUser")]
         public string? AuthorId { get; set; }
         public virtual ApplicationUser? Author { get; set; }
+        [NotMapped] 
+        public IFormFile? ImageFile { get; set; }
+
+        public string? ImageFileName { get; set; }
+        public string? AltText { get; set; }
+
 
         public string GetAvailablePremiumContentForNonPremium()
         {

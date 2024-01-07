@@ -1,13 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using ProjectBlogNews.Data;
 using ProjectBlogNews.Models;
 
@@ -18,11 +19,13 @@ namespace ProjectBlogNews.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public ArticlesController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public ArticlesController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
             _userManager = userManager;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         // GET: Articles
@@ -59,12 +62,9 @@ namespace ProjectBlogNews.Controllers
         }
 
         // POST: Articles/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        
-        public async Task<IActionResult> Create([Bind("Id,Title,ReleaseDate,FreeContent,PremiumContent,AuthorId")] Article article)
+        public async Task<IActionResult> Create([Bind("Id,Title,ReleaseDate,FreeContent,PremiumContent,AuthorId,ImageFileName")] Article article, IFormFile imageFile)
         {
             if (ModelState.IsValid)
             {
@@ -73,6 +73,24 @@ namespace ProjectBlogNews.Controllers
                 article.AuthorId = userId;
                 article.Author = user;
                 article.ReleaseDate = DateTime.Now;
+
+                // Get the wwwroot path
+                var webRootPath = _webHostEnvironment.WebRootPath;
+
+                // Handle image upload
+                if (imageFile != null && imageFile.Length > 0)
+                {
+                    var fileName = $"{Guid.NewGuid().ToString()}_{Path.GetFileName(imageFile.FileName)}";
+                    var filePath = Path.Combine(webRootPath, "ArticleImages", fileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await imageFile.CopyToAsync(stream);
+                    }
+
+                    article.ImageFileName = fileName;
+                }
+
                 _context.Add(article);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -99,89 +117,89 @@ namespace ProjectBlogNews.Controllers
         }
 
         // POST: Articles/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int? id, [Bind("Id,Title,ReleaseDate,FreeContent,PremiumContent,AuthorId")] Article article)
+        public async Task<IActionResult> Edit(int? id, [Bind("Id,Title,ReleaseDate,FreeContent,PremiumContent,AuthorId,ImageFileName")] Article article, IFormFile imageFile)
         {
-            if (id != article.Id)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            var existingArticle = await _context.Article.FindAsync(id);
+
+            if (existingArticle == null)
             {
-                try
+                return NotFound();
+            }
+
+            // Store the original AuthorId
+            var originalAuthorId = existingArticle.AuthorId;
+
+            // Update other properties
+            existingArticle.Title = article.Title;
+            existingArticle.ReleaseDate = article.ReleaseDate;
+            existingArticle.FreeContent = article.FreeContent;
+            existingArticle.PremiumContent = article.PremiumContent;
+
+            // Handle image update
+            if (imageFile != null && imageFile.Length > 0)
+            {
+                var fileName = $"{Guid.NewGuid().ToString()}_{Path.GetFileName(imageFile.FileName)}";
+                var filePath = Path.Combine(_webHostEnvironment.WebRootPath, "ArticleImages", fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
                 {
-                    _context.Update(article);
-                    await _context.SaveChangesAsync();
+                    await imageFile.CopyToAsync(stream);
                 }
-                catch (DbUpdateConcurrencyException)
+
+                // Delete the previous image file
+                if (!string.IsNullOrEmpty(existingArticle.ImageFileName))
                 {
-                    if (!ArticleExists(article.Id))
+                    var previousFilePath = Path.Combine(_webHostEnvironment.WebRootPath, "ArticleImages", existingArticle.ImageFileName);
+                    if (System.IO.File.Exists(previousFilePath))
                     {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
+                        System.IO.File.Delete(previousFilePath);
                     }
                 }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["AuthorId"] = new SelectList(_context.Users, "Id", "Id", article.AuthorId);
-            return View(article);
-        }
 
-        // GET: Articles/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.Article == null)
-            {
-                return NotFound();
+                existingArticle.ImageFileName = fileName;
             }
 
-            var article = await _context.Article
-                .Include(a => a.Author)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (article == null)
+            // Restore the original AuthorId
+            existingArticle.AuthorId = originalAuthorId;
+
+            try
             {
-                return NotFound();
+                _context.Update(existingArticle);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ArticleExists(article.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
             }
 
-            return View(article);
-        }
-
-        // POST: Articles/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int? id)
-        {
-            if (_context.Article == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.Article'  is null.");
-            }
-            var article = await _context.Article.FindAsync(id);
-            if (article != null)
-            {
-                _context.Article.Remove(article);
-            }
-            
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
+
         private bool ArticleExists(int? id)
         {
-          return (_context.Article?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Article?.Any(e => e.Id == id)).GetValueOrDefault();
         }
-        [AllowAnonymous] // Allow access to all roles
+
+        [AllowAnonymous]
         public async Task<IActionResult> DetailsView(int? id)
         {
             var subscriptionIsActive = false;
 
-            // Check if the user is authenticated (logged in)
             if (User.Identity.IsAuthenticated)
             {
                 var user = await _userManager.GetUserAsync(User);
@@ -192,17 +210,16 @@ namespace ProjectBlogNews.Controllers
                         .Where(x => x.UserId == user.Id)
                         .ToListAsync();
 
-                    // Check if any subscription is active
                     subscriptionIsActive = userSubscriptions.Any(item => item.IsActive);
                 }
             }
+
             ViewData["userHasPremium"] = subscriptionIsActive;
+
             if (id == null || _context.Article == null)
             {
                 return NotFound();
             }
-            
-            
 
             var article = await _context.Article
                 .Include(a => a.Author)
