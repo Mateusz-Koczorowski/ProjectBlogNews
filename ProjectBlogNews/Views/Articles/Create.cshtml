@@ -1,20 +1,18 @@
 ﻿@model ProjectBlogNews.Models.Article
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Create";
 }
 
 <div class="container">
-    <h1 class="mt-4">Edit</h1>
+    <h1 class="mt-4">Create</h1>
 
     <div class="card mt-4">
         <div class="card-body">
             <h4 class="card-title">Article</h4>
             <hr />
 
-            <form asp-action="Edit" enctype="multipart/form-data">
-                <input type="hidden" asp-for="Id" />
-
+            <form asp-action="Create" method="post" enctype="multipart/form-data">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                 <div class="mb-3">

@@ -366,4 +366,4 @@ FodyWeavers.xsd
 .env
 
 #ignore article images
-wwwroot/ArticleImages/
+wwwroot/ArticleImages/*
