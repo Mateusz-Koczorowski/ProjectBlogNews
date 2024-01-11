@@ -189,6 +189,51 @@ namespace ProjectBlogNews.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // GET: Articles/Delete/5
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var article = await _context.Article
+                .Include(a => a.Author)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (article == null)
+            {
+                return NotFound();
+            }
+
+            return View(article);
+        }
+
+        // POST: Articles/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var article = await _context.Article.FindAsync(id);
+
+            if (article == null)
+            {
+                return NotFound();
+            }
+
+            // Remove the image file
+            var imagePath = Path.Combine(_webHostEnvironment.WebRootPath, "ArticleImages", article.ImageFileName);
+            if (System.IO.File.Exists(imagePath))
+            {
+                System.IO.File.Delete(imagePath);
+            }
+
+            _context.Article.Remove(article);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
 
         private bool ArticleExists(int? id)
         {

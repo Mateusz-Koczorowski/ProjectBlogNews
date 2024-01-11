@@ -11,8 +11,6 @@ using ProjectBlogNews.Data;
 using ProjectBlogNews.Models;
 using System.Globalization;
 
-
-
 namespace ProjectBlogNews.Controllers
 {
     [Authorize]
@@ -54,9 +52,10 @@ namespace ProjectBlogNews.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
-            ViewData["User"] = new SelectList(_context.Users, "Email", "Id");
+            ViewData["User"] = new SelectList(_context.Users, "Id", "Email");
             return View();
         }
+
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
@@ -65,13 +64,35 @@ namespace ProjectBlogNews.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Ensure that UserId is set
+                subscription.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                // Validate SubscriptionStartDate and SubscriptionEndDate
+                if (subscription.SubscriptionStartDate == null || subscription.SubscriptionEndDate == null)
+                {
+                    ModelState.AddModelError("", "Subscription start date and end date are required.");
+                    ViewData["User"] = new SelectList(_context.Users, "Id", "Email", subscription.UserId);
+                    return View(subscription);
+                }
+
+                // Ensure that SubscriptionEndDate is later than SubscriptionStartDate
+                if (subscription.SubscriptionEndDate <= subscription.SubscriptionStartDate)
+                {
+                    ModelState.AddModelError("", "Subscription end date must be later than the start date.");
+                    ViewData["User"] = new SelectList(_context.Users, "Id", "Email", subscription.UserId);
+                    return View(subscription);
+                }
+
                 _context.Add(subscription);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["User"] = new SelectList(_context.Users, "Id", "Id", subscription.User.Email);
+
+            // If ModelState is not valid, repopulate the User dropdown
+            ViewData["User"] = new SelectList(_context.Users, "Id", "Email", subscription.UserId);
             return View(subscription);
         }
+
 
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
@@ -86,7 +107,8 @@ namespace ProjectBlogNews.Controllers
             {
                 return NotFound();
             }
-            ViewData["User"] = new SelectList(_context.Users, "Id", "Id", subscription.User.Email);
+
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Email", subscription.UserId);
             return View(subscription);
         }
 
@@ -102,27 +124,39 @@ namespace ProjectBlogNews.Controllers
 
             if (ModelState.IsValid)
             {
-                try
+                // Try to parse the Price using the current culture's decimal separator
+                if (!decimal.TryParse(subscription.Price.ToString(), NumberStyles.Number, CultureInfo.CurrentCulture, out _))
                 {
-                    _context.Update(subscription);
-                    await _context.SaveChangesAsync();
+                    // If parsing fails, add a model error for the Price field
+                    ModelState.AddModelError("Price", "The value is not a valid decimal number.");
                 }
-                catch (DbUpdateConcurrencyException)
+
+                if (ModelState.IsValid)
                 {
-                    if (!SubscriptionExists(subscription.Id))
+                    try
                     {
-                        return NotFound();
+                        _context.Update(subscription);
+                        await _context.SaveChangesAsync();
+                        return RedirectToAction(nameof(Index));
                     }
-                    else
+                    catch (DbUpdateConcurrencyException)
                     {
-                        throw;
+                        if (!SubscriptionExists(subscription.Id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
                     }
                 }
-                return RedirectToAction(nameof(Index));
             }
-            ViewData["User"] = new SelectList(_context.Users, "Id", "Id", subscription.User.Email);
+
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Email", subscription.User?.Id);
             return View(subscription);
         }
+
 
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
@@ -150,21 +184,21 @@ namespace ProjectBlogNews.Controllers
         {
             if (_context.Subscription == null)
             {
-                return Problem("Entity set 'ApplicationDbContext.Subscription'  is null.");
+                return Problem("Entity set 'ApplicationDbContext.Subscription' is null.");
             }
             var subscription = await _context.Subscription.FindAsync(id);
             if (subscription != null)
             {
                 _context.Subscription.Remove(subscription);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        
+
         private bool SubscriptionExists(int? id)
         {
-          return (_context.Subscription?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Subscription?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
         public IActionResult UserSubscriptions()
@@ -177,35 +211,30 @@ namespace ProjectBlogNews.Controllers
             return View(userSubscriptions);
         }
 
-        
         public IActionResult SelectSubscriptionDuration()
         {
             return View();
         }
 
-       
         [HttpPost]
         public IActionResult ProcessPayment(DateTime startDate, DateTime endDate)
         {
             if (endDate < startDate)
             {
-                
-                ModelState.AddModelError("","The end date is earlier than the start date.");
-                return View("","SelectSubscriptionDuration");
+                ModelState.AddModelError("", "The end date is earlier than the start date.");
+                return View("SelectSubscriptionDuration");
             }
             if (endDate == startDate)
             {
-                
-                ModelState.AddModelError("","Start date must be different from the end date.");
+                ModelState.AddModelError("", "Start date must be different from the end date.");
             }
             if (DateTime.Now > startDate)
             {
-                ModelState.AddModelError("","The chosen date cannot be earlier than today.");
+                ModelState.AddModelError("", "The chosen date cannot be earlier than today.");
             }
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var currentDate = DateTime.Now;
 
-            
             var overlappingSubscription = _context.Subscription
                 .Any(s => s.UserId == userId &&
                           s.SubscriptionStartDate <= currentDate &&
@@ -215,8 +244,7 @@ namespace ProjectBlogNews.Controllers
 
             if (overlappingSubscription)
             {
-                
-                ModelState.AddModelError("","The selected period overlaps with another active subscription.");
+                ModelState.AddModelError("", "The selected period overlaps with another active subscription.");
                 return View("SelectSubscriptionDuration");
             }
 
@@ -227,22 +255,17 @@ namespace ProjectBlogNews.Controllers
             TempData["EndDate"] = endDate;
             TempData["DurationInDays"] = durationInDays;
             TempData["Price"] = price.ToString();
-            
 
             return RedirectToAction("ConfirmPayment", TempData);
         }
 
-
-        
         public IActionResult PaymentSuccess()
         {
             return View();
         }
 
-        
         private double CalculatePrice(int durationInDays)
         {
-            
             return 0.5 * durationInDays;
         }
 
@@ -275,11 +298,8 @@ namespace ProjectBlogNews.Controllers
 
             _context.Subscription.Add(subscription);
             _context.SaveChanges();
-            Console.WriteLine($"Zapisało");
-
 
             return RedirectToAction("PaymentSuccess");
         }
-
     }
 }

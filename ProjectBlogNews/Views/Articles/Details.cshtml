@@ -4,51 +4,53 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<div class="container">
+    <h1>Details</h1>
 
-<div>
-    <h4>Article</h4>
-    <hr />
-    <dl class="card row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Title)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Title)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ReleaseDate)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ReleaseDate)
-        </dd>
-        <dt class="col-sm-2">
-            Image
-        </dt>
-        <dd class="col-sm-10">
-            <img src="~/ArticleImages/@Model.ImageFileName" alt="@Model.AltText" class="img-fluid" />
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.FreeContent)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.FreeContent)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.PremiumContent)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.PremiumContent)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Author)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Author.Id)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <div>
+        <h4>Article</h4>
+        <hr />
+        <dl class="card row">
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Title)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Title)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.ReleaseDate)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.ReleaseDate)
+            </dd>
+            <dt class="col-sm-2">
+                Image
+            </dt>
+            <dd class="col-sm-10">
+                <img src="~/ArticleImages/@Model.ImageFileName" alt="@Model.AltText" class="img-fluid" />
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.FreeContent)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.FreeContent)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.PremiumContent)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.PremiumContent)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Author)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Author.UserName)
+            </dd>
+        </dl>
+    </div>
+    <div class="mt-3">
+        <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-primary">Edit</a> |
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    </div>
 </div>
