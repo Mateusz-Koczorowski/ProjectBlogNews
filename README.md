@@ -1,6 +1,7 @@
 # Uruchomienie aplikacji
 
-##Dokumentacja dotycząca projektu oraz jego funkcjonalności znajduje się tutaj: [LINK DO DOKUMENTACJI](https://drive.google.com/file/d/1BV8TZoef8FgXG1IqyGiv4V_YJre7kpH8/view?usp=sharing)
+## Dokumentacja dotycząca projektu oraz jego funkcjonalności znajduje się tutaj: [LINK DO DOKUMENTACJI](https://drive.google.com/file/d/1BV8TZoef8FgXG1IqyGiv4V_YJre7kpH8/view?usp=sharing)
+### Dokumentacja z linku zawiera również obrazkową instrukcję uruchomienia aplikacji.
 
 Aplikacja powinna zostać pobrana z platformy Github - [ProjectBlogNews](https://github.com/Mateusz-Koczorowski/ProjectBlogNews)
 
