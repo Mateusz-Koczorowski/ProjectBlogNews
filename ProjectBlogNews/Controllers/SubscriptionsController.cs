@@ -266,7 +266,7 @@ namespace ProjectBlogNews.Controllers
 
         private double CalculatePrice(int durationInDays)
         {
-            return 0.5 * durationInDays;
+            return 1 * durationInDays;
         }
 
         public IActionResult ConfirmPayment()
