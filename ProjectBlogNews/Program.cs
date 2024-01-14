@@ -81,7 +81,8 @@ public class Program {
                     Password = Environment.GetEnvironmentVariable("Admin_Password"),
                     FirstName = Environment.GetEnvironmentVariable("Admin_FirstName"),
                     LastName = Environment.GetEnvironmentVariable("Admin_LastName"),
-                    BirthDate = DateTime.Parse(Environment.GetEnvironmentVariable("Admin_BirthDate"))
+                    BirthDate = DateTime.Parse(Environment.GetEnvironmentVariable("Admin_BirthDate")),
+                    RoleName = Environment.GetEnvironmentVariable("Admin_RoleName"),
                 },
                 Author = new
                 {
@@ -89,7 +90,8 @@ public class Program {
                     Password = Environment.GetEnvironmentVariable("Author_Password"),
                     FirstName = Environment.GetEnvironmentVariable("Author_FirstName"),
                     LastName = Environment.GetEnvironmentVariable("Author_LastName"),
-                    BirthDate = DateTime.Parse(Environment.GetEnvironmentVariable("Author_BirthDate"))
+                    BirthDate = DateTime.Parse(Environment.GetEnvironmentVariable("Author_BirthDate")),
+                    RoleName = Environment.GetEnvironmentVariable("Author_RoleName"),
                 },
                 Reader = new
                 {
@@ -97,7 +99,8 @@ public class Program {
                     Password = Environment.GetEnvironmentVariable("Reader_Password"),
                     FirstName = Environment.GetEnvironmentVariable("Reader_FirstName"),
                     LastName = Environment.GetEnvironmentVariable("Reader_LastName"),
-                    BirthDate = DateTime.Parse(Environment.GetEnvironmentVariable("Reader_BirthDate"))
+                    BirthDate = DateTime.Parse(Environment.GetEnvironmentVariable("Reader_BirthDate")),
+                    RoleName = Environment.GetEnvironmentVariable("Reader_RoleName"),
                 }
             };
 
@@ -120,7 +123,7 @@ public class Program {
                     };
 
                     await userManager.CreateAsync(user, password);
-                    await userManager.AddToRoleAsync(user, "Admin"); // You may need to adjust the role accordingly
+                    await userManager.AddToRoleAsync(user, userType.RoleName); 
                 }
             }
         }
