@@ -256,10 +256,17 @@ namespace ProjectBlogNews.Controllers
                         .ToListAsync();
 
                     subscriptionIsActive = userSubscriptions.Any(item => item.IsActive);
+
+                    if (await _userManager.IsInRoleAsync(user, "Admin") || await _userManager.IsInRoleAsync(user, "Author"))
+                    {
+                        ViewData["userHasPremium"] = true;
+                    }
+                    else
+                    {
+                        ViewData["userHasPremium"] = subscriptionIsActive;
+                    }
                 }
             }
-
-            ViewData["userHasPremium"] = subscriptionIsActive;
 
             if (id == null || _context.Article == null)
             {

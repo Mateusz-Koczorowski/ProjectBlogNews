@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="wwwroot\ArticleImages\test.png" />
+    <Folder Include="wwwroot\ArticleImages\" />
   </ItemGroup>
 
 </Project>
