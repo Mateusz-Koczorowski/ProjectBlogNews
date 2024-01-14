@@ -2,35 +2,34 @@
 
 @{
     ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Details</h1>
+<div class="container mt-5">
+    <h1 class="display-4">Details</h1>
 
-<div>
-    <h4>Subscription</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SubscriptionStartDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SubscriptionStartDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SubscriptionEndDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SubscriptionEndDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.User)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.User.Id)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Subscription</h4>
+            <hr />
+            <dl class="row">
+                <dt class="col-sm-2">Start Date:</dt>
+                <dd class="col-sm-10">@Html.DisplayFor(model => model.SubscriptionStartDate)</dd>
+
+                <dt class="col-sm-2">End Date:</dt>
+                <dd class="col-sm-10">@Html.DisplayFor(model => model.SubscriptionEndDate)</dd>
+
+                <dt class="col-sm-2">User:</dt>
+                <dd class="col-sm-10">@Html.DisplayFor(model => model.User.Email)</dd>
+
+                <dt class="col-sm-2">Price:</dt>
+                <dd class="col-sm-10">@Html.DisplayFor(model => model.Price)</dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model?.Id">Edit</a>
+        <a class="btn btn-secondary ml-2" asp-action="Index">Back to List</a>
+    </div>
 </div>

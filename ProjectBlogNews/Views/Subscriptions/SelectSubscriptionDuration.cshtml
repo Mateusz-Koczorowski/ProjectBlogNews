@@ -1,0 +1,52 @@
+﻿@model ProjectBlogNews.Models.Subscription
+
+@{
+    ViewData["Title"] = "Select Subscription Duration";
+}
+
+<div class="container">
+    <h2 class="mt-4">@ViewData["Title"]</h2>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            <ul>
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(m => m.Errors))
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            </ul>
+        </div>
+    }
+
+    <div class="card mt-4">
+        <div class="card-body">
+            <form asp-action="ProcessPayment" method="post">
+                <div class="mb-3">
+                    <label for="startDate" class="form-label">Start Date:</label>
+                    <input type="date" id="startDate" name="startDate" class="form-control" required />
+                </div>
+
+                <div class="mb-3">
+                    <label for="endDate" class="form-label">End Date:</label>
+                    <input type="date" id="endDate" name="endDate" class="form-control" required />
+                </div>
+
+                <input type="hidden" name="StartDate" id="StartDate" />
+                <input type="hidden" name="EndDate" id="EndDate" />
+
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary">Place Order</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Add JavaScript to set the values of hidden fields when the form is submitted
+        document.querySelector('form').addEventListener('submit', function () {
+            document.getElementById('StartDate').value = document.getElementById('startDate').value;
+            document.getElementById('EndDate').value = document.getElementById('endDate').value;
+        });
+    </script>
+</div>

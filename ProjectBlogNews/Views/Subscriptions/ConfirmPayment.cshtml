@@ -1,0 +1,25 @@
+@model ProjectBlogNews.Models.Subscription
+
+<div class="container">
+    <h2 class="mt-4">Payment Confirmation</h2>
+
+    <div class="card mt-4">
+        <div class="card-body">
+            <p>Start Date: @Model.SubscriptionStartDate</p>
+            <p>End Date: @Model.SubscriptionEndDate</p>
+            <p>Price: @Model.Price PLN</p>
+
+            <form asp-controller="Subscriptions" asp-action="FinalizePayment" method="post">
+                <input type="hidden" name="StartDate" value="@Model.SubscriptionStartDate" />
+                <input type="hidden" name="EndDate" value="@Model.SubscriptionEndDate" />
+                <input type="hidden" name="Price" value="@Model.Price" />
+
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-success">Confirm and Pay</button>
+                </div>
+            </form>
+
+            <a asp-action="SelectSubscriptionDuration" class="btn btn-danger">Cancel</a>
+        </div>
+    </div>
+</div>

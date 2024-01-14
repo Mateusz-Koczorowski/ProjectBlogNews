@@ -1,6 +1,8 @@
+using DotNetEnv;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ProjectBlogNews.Data;
+
 public class Program {
     public static async Task Main(string[] args)
     {
@@ -45,6 +47,13 @@ public class Program {
             pattern: "{controller=Home}/{action=Index}/{id?}");
         app.MapRazorPages();
 
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllerRoute(
+                name: "default",
+                pattern: "{controller=Home}/{action=Index}/{id?}");
+        });
+
         using (var scope = app.Services.CreateScope())
         {
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
@@ -61,35 +70,37 @@ public class Program {
 
         using (var scope = app.Services.CreateScope())
         {
+            Env.Load();
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-
+            Console.WriteLine($"Admin_BirthDate: {Environment.GetEnvironmentVariable("Admin_Email")}");
             var userData = new
             {
                 Admin = new
                 {
-                    Email = "admin@admin.com",
-                    Password = "Admin123admin!",
-                    FirstName = "Admin",
-                    LastName = "Adminsky",
-                    BirthDate = DateTime.Parse("1970-01-01")
+                    Email = Environment.GetEnvironmentVariable("Admin_Email"),
+                    Password = Environment.GetEnvironmentVariable("Admin_Password"),
+                    FirstName = Environment.GetEnvironmentVariable("Admin_FirstName"),
+                    LastName = Environment.GetEnvironmentVariable("Admin_LastName"),
+                    BirthDate = DateTime.Parse(Environment.GetEnvironmentVariable("Admin_BirthDate"))
                 },
                 Author = new
                 {
-                    Email = "author@author.com",
-                    Password = "Author123author!",
-                    FirstName = "John",
-                    LastName = "Smith",
-                    BirthDate = DateTime.Parse("1970-01-01")
+                    Email = Environment.GetEnvironmentVariable("Author_Email"),
+                    Password = Environment.GetEnvironmentVariable("Author_Password"),
+                    FirstName = Environment.GetEnvironmentVariable("Author_FirstName"),
+                    LastName = Environment.GetEnvironmentVariable("Author_LastName"),
+                    BirthDate = DateTime.Parse(Environment.GetEnvironmentVariable("Author_BirthDate"))
                 },
                 Reader = new
                 {
-                    Email = "reader@reader.com",
-                    Password = "Reader123reader!",
-                    FirstName = "Lukas",
-                    LastName = "Kowalsky",
-                    BirthDate = DateTime.Parse("1970-01-01")
+                    Email = Environment.GetEnvironmentVariable("Reader_Email"),
+                    Password = Environment.GetEnvironmentVariable("Reader_Password"),
+                    FirstName = Environment.GetEnvironmentVariable("Reader_FirstName"),
+                    LastName = Environment.GetEnvironmentVariable("Reader_LastName"),
+                    BirthDate = DateTime.Parse(Environment.GetEnvironmentVariable("Reader_BirthDate"))
                 }
             };
+
 
             foreach (var userType in new[] { userData.Admin, userData.Author, userData.Reader })
             {

@@ -361,3 +361,9 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+#ignore .env files
+.env
+
+#ignore article images
+ProjectBlogNews/wwwroot/ArticleImages/**
