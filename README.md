@@ -5,7 +5,7 @@ Aplikacja powinna zostać pobrana z platformy Github - [ProjectBlogNews](https:/
 **Uwaga!!!**
 Najbardziej aktualny kod znajduje się na branchu `master` oraz `develop`. Proszę używać .NET w wersji 6 oraz bibliotek w wersji 6!
 
-Pobierz repozytorium korzystając z `git clone` lub pobierz archiwum ZIP:
+Pobierz repozytorium korzystając z `git clone` lub pobierz archiwum ZIP.
 
 Po pobraniu kodu przejdź do folderu, w którym znajduje się aplikacja, a następnie uruchom plik `ProjectBlogNews.sln`. Wymagane jest posiadanie zainstalowanego programu Visual Studio oraz .NET w wersji 6.
 
@@ -42,3 +42,13 @@ Reader_LastName=Kowalsky
 Reader_BirthDate=1970-01-01
 Reader_RoleName=Reader
 ```
+Następnie otwórz konsolę managera pakietów NuGet.
+
+W konsoli wykonaj polecenia w celu wykonania migracji:
+```plaintext
+Install-Package Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore
+Add-Migration CreateIdentitySchema
+Update-Database
+```
+
+Po wykonaniu tego kroku, uruchom aplikację przyciskiem "Run".
