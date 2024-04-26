@@ -15,38 +15,38 @@
                 <dt class="col-sm-2">
                     @Html.DisplayNameFor(model => model.Title)
                 </dt>
-                <dd class="col-sm-10">
+                <dd data-testid="article-title" class="col-sm-10">
                     @Html.DisplayFor(model => model.Title)
                 </dd>
                 <dt class="col-sm-2">
                     @Html.DisplayNameFor(model => model.ReleaseDate)
                 </dt>
-                <dd class="col-sm-10">
+                <dd data-testid="article-releaseDate" class="col-sm-10">
                     @Html.DisplayFor(model => model.ReleaseDate)
                 </dd>
                 <dt class="col-sm-2">
                     @Html.DisplayNameFor(model => model.FreeContent)
                 </dt>
-                <dd class="col-sm-10">
+                <dd data-testid="article-releaseDate=freeContent" class="col-sm-10">
                     @Html.DisplayFor(model => model.FreeContent)
                 </dd>
                 <dt class="col-sm-2">
                     @Html.DisplayNameFor(model => model.PremiumContent)
                 </dt>
-                <dd class="col-sm-10">
+                <dd data-testid="article-premiumContent" class="col-sm-10">
                     @Html.DisplayFor(model => model.PremiumContent)
                 </dd>
                 <dt class="col-sm-2">
                     @Html.DisplayNameFor(model => model.Author)
                 </dt>
-                <dd class="col-sm-10">
+                <dd class="col-sm-10" data-testid="article-authorUserName">
                     @Html.DisplayFor(model => model.Author.UserName)
                 </dd>
             </dl>
 
             <form asp-action="Delete">
                 <input type="hidden" asp-for="Id" />
-                <button type="submit" class="btn btn-danger">Delete</button> |
+                <button type="submit" data-testid="button-delete" class="btn btn-danger">Delete</button> |
                 <a asp-action="Index" class="btn btn-secondary">Back to List</a>
             </form>
         </div>

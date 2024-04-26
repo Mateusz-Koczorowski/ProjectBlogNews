@@ -6,7 +6,7 @@
     <h1 class="mt-4">List of Users</h1>
 
     <p>
-        <a asp-action="Create" class="btn btn-primary">Create New</a>
+        <a asp-action="Create" data-testid="button-add" class="btn btn-primary">Create New</a>
     </p>
 
     <div class="card">
@@ -25,11 +25,11 @@
                 <tbody>
                     @foreach (var user in Model)
                     {
-                        <tr>
-                            <td>@user.FirstName</td>
-                            <td>@user.LastName</td>
-                            <td>@user.Email</td>
-                            <td>@user.BirthDate.ToShortDateString()</td>
+                        <tr data-testid="user-row">
+                            <td data-testid="user-firstname">@user.FirstName</td>
+                            <td data-testid="user-lastname">@user.LastName</td>
+                            <td data-testid="user-email">@user.Email</td>
+                            <td data-testid="user-birthdate">@user.BirthDate.ToShortDateString()</td>
                             <td>
                                 @foreach (var role in await _userManager.GetRolesAsync(user))
                                 {

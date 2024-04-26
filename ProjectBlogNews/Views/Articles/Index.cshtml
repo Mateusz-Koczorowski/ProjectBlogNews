@@ -8,7 +8,7 @@
     <h1>List of articles</h1>
 
     <p>
-        <a asp-action="Create" class="btn btn-primary">Create New</a>
+        <a asp-action="Create" data-testid="button-add" class="btn btn-primary">Create New</a>
     </p>
 
     <div class="card">
@@ -44,37 +44,37 @@
                     @foreach (var item in Model)
                     {
                         <tr>
-                            <td>
+                            <td data-testid="article-title">
                                 @Html.DisplayFor(modelItem => item.Title)
                             </td>
-                            <td>
+                            <td data-testid="article-releaseDate">
                                 @Html.DisplayFor(modelItem => item.ReleaseDate)
                             </td>
-                            <td>
+                            <td data-testid="article-freeContent">
                                 @{
                                     var truncatedFreeContent = item.FreeContent.Length > 100 ? item.FreeContent.Substring(0, 100) + "..." : item.FreeContent;
                                     @Html.Raw(truncatedFreeContent)
                                 }
                             </td>
-                            <td>
+                            <td data-testid="article-freeContent">
                                 @{
                                     var truncatedPremiumContent = item.PremiumContent.Length > 100 ? item.PremiumContent.Substring(0, 100) + "..." : item.PremiumContent;
                                     @Html.Raw(truncatedPremiumContent)
                                 }
                             </td>
-                            <td>
+                            <td data-testid="article-authorLastName" >
                                 @Html.DisplayFor(modelItem => item.Author.LastName)
                             </td>
-                            <td>
+                            <td data-testid="article-imageFile">
                                 @Html.DisplayFor(modelItem => item.ImageFileName)
                             </td>
-                            <td>
+                            <td data-testid="article-altText">
                                 @Html.DisplayFor(modelItem => item.AltText)
                             </td>
                             <td>
-                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Edit</a>
-                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">Details</a>
-                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+                                <a asp-action="Edit" data-testid="button-edit" asp-route-id="@item.Id" class="btn btn-warning">Edit</a>
+                                <a asp-action="Details" data-testid="button-details" asp-route-id="@item.Id" class="btn btn-info">Details</a>
+                                <a asp-action="Delete" data-testid="button-delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
                             </td>
                         </tr>
                     }

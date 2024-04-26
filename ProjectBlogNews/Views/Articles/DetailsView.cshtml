@@ -6,33 +6,33 @@
 <div class="container mt-5">
     <div class="row">
         <div class="col-md-8 offset-md-2">
-            <h1 class="display-4">@Html.DisplayFor(model => model.Title)</h1>
-            <p class="text-muted">Release date: <strong>@Html.DisplayFor(model => model.ReleaseDate)</strong></p>
+            <h1 class="display-4" data-testid="article-title">@Html.DisplayFor(model => model.Title)</h1>
+            <p class="text-muted" data-testid="article-releaseDate">Release date: <strong>@Html.DisplayFor(model => model.ReleaseDate)</strong></p>
 
             <div class="card mb-4">
                 <div class="card-body">
-                    <h4 class="card-title">@Html.DisplayFor(model => model.FreeContent)</h4>
+                    <h4 class="card-title" data-testid="article-freeContent">@Html.DisplayFor(model => model.FreeContent)</h4>
 
                     @if (!string.IsNullOrEmpty(Model.ImageFileName))
                     {
-                        <img src="~/ArticleImages/@Model.ImageFileName" alt="@Model.AltText" class="img-fluid mb-3" />
+                        <img data-testid="article-image" src="~/ArticleImages/@Model.ImageFileName" alt="@Model.AltText" class="img-fluid mb-3" />
                     }
 
                     @if (ViewData["userHasPremium"] is bool userHasPremium && userHasPremium)
                     {
-                        <p class="card-text">@Html.DisplayFor(model => model.PremiumContent)</p>
+                        <p class="card-text" data-testid="article-premiumContent">@Html.DisplayFor(model => model.PremiumContent)</p>
                     }
                     else
                     {
-                        <p class="card-text">@ViewData["AvailablePremiumContentForNonPremium"]...</p>
-                        <p class="card-text"><strong>Buy premium to see 75% left content in this article!</strong></p>
+                        <p class="card-text" data-testid="article-freePremiumContent">@ViewData["AvailablePremiumContentForNonPremium"]...</p>
+                        <p class="card-text" data-testid="article-buyPremiumMessage"><strong>Buy premium to see 75% left content in this article!</strong></p>
                     }
                 </div>
             </div>
 
-            <p class="text-muted">Created by: <strong>@Html.DisplayFor(model => model.Author.FirstName) @Html.DisplayFor(model => model.Author.LastName)</strong></p>
+            <p class="text-muted" data-testid="article-authorFullname">Created by: <strong>@Html.DisplayFor(model => model.Author.FirstName) @Html.DisplayFor(model => model.Author.LastName)</strong></p>
 
-            <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Go back to our awesome news list!</a>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-primary" data-testid="button-back">Go back to our awesome news list!</a>
         </div>
     </div>
 </div>
