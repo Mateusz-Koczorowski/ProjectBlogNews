@@ -13,13 +13,13 @@
         {
             <div class="col-md-6">
                 <div class="card mb-4">
-                    <div class="card-body">
-                        <h2 class="card-title">
+                    <div class="card-body" data-testid="article-card">
+                        <h2 class="card-title" data-testid="article-title">
                             <a asp-controller="Articles" asp-action="DetailsView" asp-route-id="@item.Id">@item.Title</a>
                         </h2>
-                        <h5>@Html.DisplayFor(modelItem => item.ReleaseDate)</h5>
+                        <h data-testid="article-releaseDate" 5>@Html.DisplayFor(modelItem => item.ReleaseDate)</h>
                         <p class="card-text">
-                            <small class="text-muted">
+                            <small class="text-muted" data-testid="article-authorFullName">
                                 By @Html.DisplayFor(modelItem => item.Author.FirstName) @Html.DisplayFor(modelItem => item.Author.LastName)
                             </small>
                         </p>

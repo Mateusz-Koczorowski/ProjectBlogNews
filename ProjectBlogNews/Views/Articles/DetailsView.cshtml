@@ -15,7 +15,7 @@
 
                     @if (!string.IsNullOrEmpty(Model.ImageFileName))
                     {
-                        <img data-testid="article-image" src="~/ArticleImages/@Model.ImageFileName" alt="@Model.AltText" class="img-fluid mb-3" />
+                        <img data-testid="article-imageFile" src="~/ArticleImages/@Model.ImageFileName" alt="@Model.AltText" class="img-fluid mb-3" />
                     }
 
                     @if (ViewData["userHasPremium"] is bool userHasPremium && userHasPremium)

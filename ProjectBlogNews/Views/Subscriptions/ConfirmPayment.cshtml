@@ -5,9 +5,9 @@
 
     <div class="card mt-4">
         <div class="card-body">
-            <p>Start Date: @Model.SubscriptionStartDate</p>
-            <p>End Date: @Model.SubscriptionEndDate</p>
-            <p>Price: @Model.Price PLN</p>
+            <p data-testid="start-date">Start Date: @Model.SubscriptionStartDate</p>
+            <p data-testid="end-date">End Date: @Model.SubscriptionEndDate</p>
+            <p data-testid="price">Price: @Model.Price PLN</p>
 
             <form asp-controller="Subscriptions" asp-action="FinalizePayment" method="post">
                 <input type="hidden" name="StartDate" value="@Model.SubscriptionStartDate" />
