@@ -234,6 +234,39 @@ namespace ProjectBlogNews.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // POST: Articles/DeleteAll
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteAll()
+        {
+            try
+            {
+                // Get all articles
+                var articles = await _context.Article.ToListAsync();
+
+                // Delete image files
+                foreach (var article in articles)
+                {
+                    var imagePath = Path.Combine(_webHostEnvironment.WebRootPath, "ArticleImages", article.ImageFileName);
+                    if (System.IO.File.Exists(imagePath))
+                    {
+                        System.IO.File.Delete(imagePath);
+                    }
+                }
+
+                // Remove all articles from the database
+                _context.Article.RemoveRange(articles);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions
+                return StatusCode(500, ex.Message);
+            }
+        }
 
         private bool ArticleExists(int? id)
         {

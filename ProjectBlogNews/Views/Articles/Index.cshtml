@@ -43,7 +43,7 @@
                 <tbody>
                     @foreach (var item in Model)
                     {
-                        <tr>
+                        <tr data-testid="article-row">
                             <td data-testid="article-title">
                                 @Html.DisplayFor(modelItem => item.Title)
                             </td>
@@ -56,7 +56,7 @@
                                     @Html.Raw(truncatedFreeContent)
                                 }
                             </td>
-                            <td data-testid="article-freeContent">
+                            <td data-testid="article-premiumContent">
                                 @{
                                     var truncatedPremiumContent = item.PremiumContent.Length > 100 ? item.PremiumContent.Substring(0, 100) + "..." : item.PremiumContent;
                                     @Html.Raw(truncatedPremiumContent)
@@ -71,7 +71,7 @@
                             <td data-testid="article-altText">
                                 @Html.DisplayFor(modelItem => item.AltText)
                             </td>
-                            <td>
+                            <td data-testid="operations">
                                 <a asp-action="Edit" data-testid="button-edit" asp-route-id="@item.Id" class="btn btn-warning">Edit</a>
                                 <a asp-action="Details" data-testid="button-details" asp-route-id="@item.Id" class="btn btn-info">Details</a>
                                 <a asp-action="Delete" data-testid="button-delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
